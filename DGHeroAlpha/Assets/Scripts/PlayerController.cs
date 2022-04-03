@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -30,6 +29,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        movement.Normalize();
 
         rb.velocity = new Vector2(movement.x * speed * Time.fixedDeltaTime, movement.y * speed * Time.fixedDeltaTime);
 
@@ -37,8 +37,6 @@ public class PlayerController : MonoBehaviour
 
         float mangle = Mathf.Atan2(lookDir.y, lookDir.x) * Mathf.Rad2Deg - 90f;
         rb.rotation = mangle;
-
-        movement.Normalize();
 
         /*Vector2 moveDirection = GetComponent<Rigidbody2D>().velocity;*/
 

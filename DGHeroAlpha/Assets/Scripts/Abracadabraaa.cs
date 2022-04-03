@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Abracadabraaa : MonoBehaviour
 {
-    public GameObject player;
-
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D boxCollider;
 
@@ -13,8 +11,8 @@ public class Abracadabraaa : MonoBehaviour
 
     void Start()
     {
-        boxCollider = player.GetComponent<BoxCollider2D>();
-        spriteRenderer = player.GetComponent<SpriteRenderer>();
+        boxCollider = gameObject.GetComponent<BoxCollider2D>();
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
     }
 
     void Update()
