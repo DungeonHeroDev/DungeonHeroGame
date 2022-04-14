@@ -29,7 +29,7 @@ public class Abracadabraaa : MonoBehaviour
         {
             spriteRenderer.color = invisible;
             boxCollider.enabled = false;
-            Debug.Log("Woosh");
+            // Debug.Log("Woosh");
         }
         else
         {

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
-
     public Camera cam;
 
     [SerializeField] private float speed = 500f;

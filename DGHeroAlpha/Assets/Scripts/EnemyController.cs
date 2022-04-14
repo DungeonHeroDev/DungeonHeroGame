@@ -4,81 +4,81 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    public float speed;
-    public float checkRadius;
-    public float attackRadius;
+    [SerializeField] private GameObject player;
 
-    public bool shouldRotate;
+    private Rigidbody2D enemyRb;
+    private SpriteRenderer enemySr;
 
-    public LayerMask whatIsPlayer;
+    //chase variables
+    [SerializeField] private float chaseSpeed = 5f;
+    private Vector3 chaseDirection;
 
-    private Transform target;
-    private Rigidbody2D rb;
-    private Animator anim;
-    private Vector2 movement;
-    public Vector3 dir;
-
-    private bool isInChaseRange;
-    private bool isInAttackRange;
-    private bool isfacingRight;
+    //wander variables
+    [SerializeField] private float wanderStrength = 0.1f;
+    [SerializeField] private float wanderSpeed = 2f;
+    private Vector3 wanderDirection;
+    private static bool isWandering = true;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        //anim = GetComponent<Animator>();
-        target = GameObject.FindWithTag("Player").transform;
+        enemyRb = gameObject.GetComponent<Rigidbody2D>();
+        enemySr = gameObject.GetComponent<SpriteRenderer>();
     }
 
-    private void Update()
+    void OnCollisionEnter2D(Collision2D other)
     {
-        //anim.SetBool("isRunning", isInChaseRange);
-
-        isInChaseRange = Physics2D.OverlapCircle(transform.position, checkRadius, whatIsPlayer);
-        isInAttackRange = Physics2D.OverlapCircle(transform.position, attackRadius, whatIsPlayer);
-
-        dir = target.position - transform.position;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        dir.Normalize();
-        movement = dir;
-        if (shouldRotate)
+        if (other.gameObject.tag == "Wall")
         {
-            /*anim.SetFloat('X', dir.x);
-            anim.SetFloat('Y', dir.y);*/
+            Debug.Log("Collided with a wall, I am a dummy");
+            wanderDirection = (other.transform.position * -1).normalized;
         }
 
-        if (Vector3.Distance(target.position, transform.position) < 20)
-        {
+    }
 
-            transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
-            if (target.position.x > transform.position.x && !isfacingRight) //if the target is to the right of enemy and the enemy is not facing right
-                Flip();
-            if (target.position.x < transform.position.x && isfacingRight)
-                Flip();
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Player")
+        {
+            isWandering = false;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.tag == "Player")
+        {
+            isWandering = true;
         }
     }
 
     private void FixedUpdate()
     {
-        if (isInChaseRange && !isInAttackRange)
+        if (isWandering)
         {
-            MoveCharacter(movement);
+            Vector3 randomDirection = Random.insideUnitCircle;
+            wanderDirection = (wanderDirection + randomDirection * wanderStrength).normalized;
+            enemyRb.MovePosition(gameObject.transform.position + wanderDirection * wanderSpeed * Time.fixedDeltaTime);
+            Flip(wanderDirection);
+
+            // gameObject.transform.Translate((wanderDirection * Time.deltaTime) * wanderSpeed);
         }
-        if (isInAttackRange)
+        else
         {
-            rb.velocity = Vector2.zero;
+            chaseDirection = (player.transform.position - gameObject.transform.position).normalized;
+            enemyRb.MovePosition(gameObject.transform.position + chaseDirection * chaseSpeed * Time.fixedDeltaTime);
+            Flip(chaseDirection);
         }
     }
 
-    private void MoveCharacter(Vector2 dir)
+    void Flip(Vector3 direction)
     {
-        rb.MovePosition((Vector2)transform.position + (speed * Time.deltaTime * dir));
-    }
-
-    void Flip()
-    {
-        Vector3 scale = transform.localScale;
-        scale.x *= -1;
-        transform.localScale = scale;
-        isfacingRight = !isfacingRight;
+        if (direction.x > 0)
+        {
+            enemySr.flipX = true;
+        }
+        else if (direction.x < 0)
+        {
+            enemySr.flipX = false;
+        }
     }
 }
