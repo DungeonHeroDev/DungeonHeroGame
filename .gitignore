@@ -31,6 +31,10 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+.plastic
+ignore.conf
+.vscode
+
 ### Unity ###
 # This .gitignore file should be placed at the root of your Unity project directory
 #
